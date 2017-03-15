@@ -1,5 +1,3 @@
-*.txt
-*.ini
 # Compiled source #
 ###################
 *.com
@@ -40,6 +38,13 @@
 ehthumbs.db
 Thumbs.db
 
-*.ini
-
-*.txt
+# Other #
+#########
+.vscode
+/movies.txt
+/music.txt
+/pictures.txt
+/token.txt
+/tvshows.txt
+/user.ini
+/.coverage

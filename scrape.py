@@ -19,22 +19,25 @@
 # along with PlexDownloader.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from xml.dom import minidom
-import urllib
-import os
-import time
+
+import base64
 import hashlib
-from ConfigParser import SafeConfigParser
+import os
+import platform
+import random
 import re
 import socket
-from urllib2 import Request, urlopen, quote
-import base64
-import uuid
-import platform
-from time import gmtime, strftime
-import random
 import string
-from myplex import myPlexSignin
+import time
+import urllib
+import uuid
+from ConfigParser import SafeConfigParser
+from time import gmtime, strftime
+from urllib2 import Request, quote, urlopen
+from xml.dom import minidom
+
+from myplex import myplex_signin
+from version import VERSION
 
 parser = SafeConfigParser()
 parser.read('user.ini')
@@ -54,26 +57,26 @@ tvlocation = parser.get('tvshows', 'tvlocation')
 tvsync = parser.get('tvshows', 'fullsync')
 tvactive = parser.get('tvshows', 'active')
 tvdelete = parser.get('tvshows', 'autodelete')
-tvunwatched= parser.get('tvshows','unwatched')
+tvunwatched = parser.get('tvshows', 'unwatched')
 
-tvtranscode= parser.get('tvtranscode','active')
-tvheight = parser.get('tvtranscode','height')
-tvwidth = parser.get('tvtranscode','width')
-tvbitrate = parser.get('tvtranscode','maxbitrate')
-tvquality = parser.get('tvtranscode','videoquality')
+tvtranscode = parser.get('tvtranscode', 'active')
+tvheight = parser.get('tvtranscode', 'height')
+tvwidth = parser.get('tvtranscode', 'width')
+tvbitrate = parser.get('tvtranscode', 'maxbitrate')
+tvquality = parser.get('tvtranscode', 'videoquality')
 
-movietranscode = parser.get('movietranscode','active')
-movieheight = parser.get('movietranscode','height')
-moviewidth = parser.get('movietranscode','width')
-moviebitrate = parser.get('movietranscode','maxbitrate')
-moviequality = parser.get('movietranscode','videoquality')
+movietranscode = parser.get('movietranscode', 'active')
+movieheight = parser.get('movietranscode', 'height')
+moviewidth = parser.get('movietranscode', 'width')
+moviebitrate = parser.get('movietranscode', 'maxbitrate')
+moviequality = parser.get('movietranscode', 'videoquality')
 
 movieid = parser.get('movies', 'plexid')
 movielocation = parser.get('movies', 'movielocation')
 moviefile = parser.get('movies', 'moviefile')
 moviesync = parser.get('movies', 'fullsync')
 movieactive = parser.get('movies', 'active')
-movieunwatched = parser.get('movies','unwatched')
+movieunwatched = parser.get('movies', 'unwatched')
 
 musicid = parser.get('music', 'plexid')
 musiclocation = parser.get('music', 'musiclocation')
@@ -94,12 +97,12 @@ tvscrapelimit = int(parser.get('scrape', 'tvlimit'))
 scrapetimer = int(parser.get('scrape', 'timer'))
 
 
-plexsession=str(uuid.uuid4())
+plexsession = str(uuid.uuid4())
 socket.setdefaulttimeout(180)
 
-plextoken=""
+plextoken = ""
 
-print "PlexScraper - v0.01"
+print "PlexScraper - " + VERSION
 
 #Itemfile is list of shows to include/exclude.  Exclude by adding a "!" at beginning of show name.
 #Any blank line or line beginning with a hash mark are ignored.
@@ -107,7 +110,7 @@ print "PlexScraper - v0.01"
 def ReadItemFile(itemfile):
     list = []
     try:
-        fp = open(itemfile,"r")
+        fp = open(itemfile, "r")
         list = fp.read().split("\n")
         fp.close()
     except Exception as e:
@@ -242,7 +245,7 @@ else:
     while True:
         try:
             if myplexstatus=="enable":
-                plextoken = myPlexSignin(myplexusername,myplexpassword)
+                plextoken = myplex_signin(myplexusername,myplexpassword)
             if myplexstatus=="enable" and plextoken=="":
                 print "Plex Scraper: Failed to login to myPlex. Please disable myPlex or enter your correct login."
                 exit()
